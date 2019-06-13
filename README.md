@@ -1,4 +1,4 @@
-﻿# https://github.com/kun391/nino
+﻿# https://github.com/kun391/phpup
 
 ## Maintained by: [KUN](https://github.com/kun391/phpup)
 
