@@ -1,0 +1,23 @@
+version: '3'
+services:
+  # container for API
+  app:
+    build:
+      context: .
+    ports:
+      - 8000:80
+    working_dir: /var/www/app
+    volumes:
+      - './demo:/var/www/app'
+      - './conf/supervisord.conf:/etc/supervisor/supervisord.conf'
+      - './conf/queue.conf:/etc/supervisor/conf.d/queue.conf'
+      - './conf/nginx.conf:/etc/nginx/sites-enabled/default.conf'
+  db:
+    image: mysql:5.7
+    ports:
+      - 3305:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: db
+      MYSQL_USER: dbuser
+      MYSQL_PASSWORD: user123
