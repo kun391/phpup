@@ -21,5 +21,5 @@ COPY conf/supervisord.conf /etc/supervisor/supervisord.conf
 RUN mkdir /etc/supervisor/conf.d
 
 RUN docker-php-ext-configure pcntl \
-    && docker-php-ext-install pcntl bcmath \
+    && docker-php-ext-install pcntl bcmath sockets \
     && docker-php-ext-enable pcntl xdebug bcmath
