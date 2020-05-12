@@ -6,12 +6,17 @@ services:
       context: .
     ports:
       - 8000:80
+      - 443:443
     working_dir: /var/www/app
     volumes:
       - './demo:/var/www/app'
       - './conf/supervisord.conf:/etc/supervisor/supervisord.conf'
       - './conf/queue.conf:/etc/supervisor/conf.d/queue.conf'
       - './conf/nginx.conf:/etc/nginx/sites-enabled/default.conf'
+      - './conf/nginx.ssl.conf:/etc/nginx/sites-enabled/default.ssl.conf'
+    environment:
+      DOMAIN: local.dev
+      GIT_EMAIL: thanhnt@greenglobal.vn
   db:
     image: mysql:5.7
     ports:
