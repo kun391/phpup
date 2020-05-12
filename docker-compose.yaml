@@ -14,9 +14,6 @@ services:
       - './conf/queue.conf:/etc/supervisor/conf.d/queue.conf'
       - './conf/nginx.conf:/etc/nginx/sites-enabled/default.conf'
       - './conf/nginx.ssl.conf:/etc/nginx/sites-enabled/default.ssl.conf'
-    environment:
-      DOMAIN: local.dev
-      GIT_EMAIL: thanhnt@greenglobal.vn
   db:
     image: mysql:5.7
     ports:
