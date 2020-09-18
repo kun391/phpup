@@ -1,0 +1,14 @@
+http:
+  routers:
+    traefik:
+      rule: "Host(`core.api`)"
+      service: "api@internal"
+      tls:
+        domains:
+          - main: "core.api"
+            sans:
+              - "*.core.api"
+tls:
+	certificates:
+		- certFile: "/etc/certs/local-cert.pem"
+		- keyFile: "/etc/certs/local-key.pem"
