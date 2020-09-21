@@ -1,25 +1,44 @@
 version: '3'
 services:
   # container for API
-  app:
-    build:
-      context: .
+  dnsmasq:
+    restart: always
+    image: jpillora/dnsmasq:latest
     ports:
-      - 8000:80
-      - 443:443
-    working_dir: /var/www/app
+      - 53:53/udp
     volumes:
-      - './demo:/var/www/app'
-      - './conf/supervisord.conf:/etc/supervisor/supervisord.conf'
-      - './conf/queue.conf:/etc/supervisor/conf.d/queue.conf'
-      - './conf/nginx.conf:/etc/nginx/sites-enabled/default.conf'
-      - './conf/nginx.ssl.conf:/etc/nginx/sites-enabled/default.ssl.conf'
-  db:
-    image: mysql:5.7
+      - ./dnsmasq/dnsmasq.conf:/etc/dnsmasq.conf:ro
+
+  traefik:
+    restart: always
+    image: traefik:latest
     ports:
-      - 3305:3306
-    environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: db
-      MYSQL_USER: dbuser
-      MYSQL_PASSWORD: user123
+      - "80:80"
+      - "8080:8080"
+      - "443:443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./certs:/certs:ro
+      - ./traefik/traefik.yml:/traefik.yml:ro
+      - ./traefik/dynamic.yml:/dynamic.yml:ro
+    depends_on:
+      - dnsmasq
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.traefik.tls=true
+      - traefik.http.routers.traefik.service=traefik
+  app:
+    extends:
+      file: common.yaml
+      service: app
+    labels:
+      - "traefik.enable=true"
+      - traefik.http.routers.traefik.entrypoints=http,https
+      # URL to reach this container
+      - "traefik.http.routers.app.rule=Host(`core.dev`)"
+      # Activation of TLS
+      - "traefik.http.routers.app.tls=true"
+  db:
+    extends:
+      file: common.yaml
+      service: db

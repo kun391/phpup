@@ -1,0 +1,15 @@
+version: '3'
+services:
+  # container for API
+  app:
+    extends:
+      file: common.yaml
+      service: app
+    ports:
+      - "80:80"
+      - "8080:8080"
+      - "443:443"
+  db:
+    extends:
+      file: common.yaml
+      service: db

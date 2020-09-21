@@ -2,7 +2,7 @@
 
 ## Maintained by: [KUN](https://github.com/kun391/phpup)
 
-This is the Git repo of the DOCKER NGINX-PHP7.2 & Supervisor
+This is the Git repo of the DOCKER NGINX-PHP7.4 & Supervisor
 
 
 # Tutorial
@@ -34,7 +34,7 @@ WORKDIR /your-application-dir
 
 ```
 
-## Start Web Server with docker-compose.yml
+## Start Web Server with docker-compose (http) same the file [docker-compose](https://github.com/kun391/phpup/blob/master/docker-compose-deployment.yaml)
 
 Step 1
 ```
@@ -62,13 +62,18 @@ services:
 
 Assuming all steps were followed correctly, this will pull all the required images and start serving the app:
 ```
-docker-compose up -d
+docker-compose -f docker-compose up -d
 ```
 
 NOW, We can access this with localhost:8000 for Web Server
 
-# Contributing
+## Start web server with docker-compose (https)
 
+We using traefik, dnsmasq, mkcert for this sample.
+
+We can following [docker-compose](https://github.com/kun391/phpup/blob/master/docker-compose.yaml)
+
+# Contributing
 
 # License
 MIT
