@@ -1,40 +1,44 @@
 version: '3'
 services:
   # container for API
+  dnsmasq:
+    restart: always
+    image: jpillora/dnsmasq:latest
+    ports:
+      - 53:53/udp
+    volumes:
+      - ./dnsmasq/dnsmasq.conf:/etc/dnsmasq.conf:ro
+
   traefik:
-    image: "traefik:v2.2"
-    command: --api.insecure=true --providers.docker
+    restart: always
+    image: traefik:latest
     ports:
-      # The HTTP port
-      - 80:80
-      - 443:443
-      # The Web UI (enabled by --api.insecure=true)
-      - 8080:8080
+      - "80:80"
+      - "8080:8080"
+      - "443:443"
     volumes:
-      # So that Traefik can listen to the Docker events
-      - "/var/run/docker.sock:/var/run/docker.sock"
-      # Map the static conf into the container
-      - ./traefik.yml:/etc/traefik/traefik.yml:ro
-      # Map the dynamic conf into the container
-      - ./conf/traefik-config.yml:/etc/traefik/config.yml:ro
-      # Map the certificats into the container
-      - ./certs:/etc/certs:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./certs:/certs:ro
+      - ./traefik/traefik.yml:/traefik.yml:ro
+      - ./traefik/dynamic.yml:/dynamic.yml:ro
+    depends_on:
+      - dnsmasq
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.traefik.tls=true
+      - traefik.http.routers.traefik.service=traefik
   app:
-    build:
-      context: .
-    working_dir: /var/www/app
-    volumes:
-      - './demo:/var/www/app'
-      - './conf/supervisord.conf:/etc/supervisor/supervisord.conf'
-      - './conf/queue.conf:/etc/supervisor/conf.d/queue.conf'
-      - './conf/nginx.conf:/etc/nginx/sites-enabled/default.conf'
-      # - './conf/nginx.ssl.conf:/etc/nginx/sites-enabled/default.ssl.conf'
+    extends:
+      file: common.yaml
+      service: app
+    labels:
+      - "traefik.enable=true"
+      - traefik.http.routers.traefik.entrypoints=http,https
+      # URL to reach this container
+      - "traefik.http.routers.app.rule=Host(`core.dev`)"
+      # Activation of TLS
+      - "traefik.http.routers.app.tls=true"
   db:
-    image: mysql:5.7
-    ports:
-      - 3305:3306
-    environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: db
-      MYSQL_USER: dbuser
-      MYSQL_PASSWORD: user123
+    extends:
+      file: common.yaml
+      service: db
