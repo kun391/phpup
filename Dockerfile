@@ -1,9 +1,8 @@
 # The FROM instruction sets the Base Image for subsequent instructions.
 # As such, a valid Dockerfile must have FROM as its first instruction.
-FROM richarvey/nginx-php-fpm:1.9.0
+FROM richarvey/nginx-php-fpm:1.10.4
 
 # The MAINTAINER instruction allows you to set the Author field of the generated images.
-MAINTAINER Kun <nguyentruongthanh.dn@gmail.com>
 
 # Install composer parallel
 RUN composer global require hirak/prestissimo
@@ -24,7 +23,7 @@ RUN openssl req -x509 -sha256 -nodes -days 365 -newkey rsa:2048 -keyout $CERT_SS
 COPY conf/nginx.conf /etc/nginx/sites-enabled/default.conf
 COPY conf/nginx.ssl.conf /etc/nginx/sites-enabled/default.ssl.conf
 
-RUN apk --update add python
+RUN apk --update add python2
 
 RUN apk add supervisor
 
