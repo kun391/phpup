@@ -76,6 +76,14 @@ RUN apk --no-cache add \
     php8-pdo_mysql \
     nginx supervisor curl tzdata htop mysql-client dcron
 
+
+#install kafka ext
+RUN apk --update add autoconf librdkafka-dev
+
+RUN pecl install rdkafka
+
+RUN docker-php-ext-enable rdkafka
+
 #setting working dir when user login
 WORKDIR /var/www/app
 
